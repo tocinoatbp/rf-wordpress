@@ -1,0 +1,22 @@
+{
+    "name": "alphafounders/wordpress-template",
+    "authors": [
+        {
+            "name": "Alex Stansfield",
+            "email": "alexanders@rabbit.co.th"
+        }
+    ],
+    "repositories":[
+        {
+            "type":"composer",
+            "url":"https://wpackagist.org",
+            "only": [
+                "wpackagist-plugin/*",
+                "wpackagist-theme/*"
+            ]
+        }
+    ],
+    "require": {
+        "wpackagist-plugin/woocommerce": "^5.2"
+    }
+}

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "rabbit-app.fullname" . }}-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: {{ .Values.storage.storageClass.name | default "-" }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.size | quote }}

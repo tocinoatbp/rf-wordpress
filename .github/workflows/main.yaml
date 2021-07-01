@@ -1,0 +1,31 @@
+name: Docker
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - 
+      name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}    
+    - 
+      name: Build and push Docker images
+      uses: docker/build-push-action@v2.5.0
+      id: docker_build
+      with:
+        push: true
+        tags: tocinoatbp/rabbit-devops:5.7.1-fpm-alpine
+    -
+      name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}

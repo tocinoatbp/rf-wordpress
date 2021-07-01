@@ -1,0 +1,108 @@
+# Default values for rabbit-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+nameOverride: "app"
+fullnameOverride: "app"
+
+wordpress:
+  image:
+    repository: tocinoatbp/rabbit-devops
+    pullPolicy: Always
+    tag: "5.7.1-fpm-alpine"
+
+  database:
+    WORDPRESS_DB_HOST: mysql
+    WORDPRESS_DB_NAME: wp-database
+    WORDPRESS_DB_USER: root
+    WORDPRESS_DB_PASSWORD: password
+  
+  config:  
+    WORDPRESS_TABLE_PREFIX: shop_
+    WORDPRESS_DEBUG: 1
+
+  service:
+    type: ClusterIP
+    port: 9000
+
+nginx:
+  image:
+    repository: nginx
+    pullPolicy: IfNotPresent
+    tag: ""
+
+  service:
+    type: LoadBalancer
+    port: 80
+
+storage:
+  storageClass:
+    name: efs-sc
+  size: 5Gi
+
+
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: 
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  runAsUser: 0
+
+ingress:
+  enabled: true
+  annotations: 
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+    # nginx.ingress.kubernetes.io/fastcgi-params-configmap: "example-cm"
+  hosts:
+    # - host: chart-example.local
+    - paths:
+      - path: /
+        backend:
+          serviceName: app-wordpress
+          servicePort: 9000
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}

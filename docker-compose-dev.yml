@@ -1,0 +1,22 @@
+version: '3'
+services:
+  mysql:
+    volumes:
+      - rabbit-shop-database-sync:/var/lib/mysql
+  composer:
+    volumes:
+      - rabbit-shop-source-sync:/app
+  wordpress:
+    volumes:
+      - rabbit-shop-source-sync:/var/www/html
+#      - ./wordpress/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+#  nginx:
+#    volumes:
+#      - ./nginx:/etc/nginx/conf.d
+#      - ./logs/nginx:/var/log/nginx
+#      - rabbit-shop-source-sync:/var/lib/mysql
+volumes:
+  rabbit-shop-source-sync:
+    external: true
+  rabbit-shop-database-sync:
+    external: true

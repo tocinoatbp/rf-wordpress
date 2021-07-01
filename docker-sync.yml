@@ -1,0 +1,6 @@
+version: "2"
+syncs:
+  rabbit-shop-database-sync:
+    src: './mysql'
+  rabbit-shop-source-sync:
+    src: './wordpress'

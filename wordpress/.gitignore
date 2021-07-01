@@ -1,0 +1,21 @@
+# Wordpress Defaults
+wp-admin/
+wp-includes/
+wp-content/uploads/
+wp-content/themes/*
+wp-content/plugins/*
+wp-content/index.php
+!wp-content/plugins/.keep
+!wp-content/themes/.keep
+wp-*.php
+xmlrpc.php
+/index.php
+license.txt
+readme.html
+.htaccess
+
+# Wordpress Includes
+
+
+# Composer
+/vendor
