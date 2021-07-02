@@ -42,9 +42,7 @@ nginx:
   enabled: true
   ssl:
     enabled: false
-    
   service:
-    type: LoadBalancer
     port: 80
 
 storage:
