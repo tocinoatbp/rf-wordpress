@@ -59,3 +59,36 @@ When pods are ready, install wordpress app, access the app via port-forwarding t
 kubectl port-forward <release name pod> nginx 8080:80
 ```
 
+Go to your web browser and access `localhost:8080`
+
+Configure necessary details
+
+<img width="1669" alt="Screen Shot 2021-07-02 at 11 28 03 AM" src="https://user-images.githubusercontent.com/54875593/124216645-4f915a00-db29-11eb-9fd8-bd0e00764b36.png">
+
+Change directory to `../helm`, Install phpmyadmin to update site url and other fields required.
+
+```bash
+helm install phpmyadmin phpmyadmin --set config.PMA_HOST=<WORDPRESS_DB> --set config.PMA_USER=<WORDPRESS_USER> --set config.PMA_PASSWORD=<WORDPRESS_PASSWORD>
+```
+
+port-forward to phpmyadmin pod.
+
+```bash
+kubectl port-forward phpmyadmin-xxxxx 8080:80
+```
+
+![Screen Shot 2021-07-02 at 11 44 13 AM](https://user-images.githubusercontent.com/54875593/124217688-5ae58500-db2b-11eb-89c0-d79a0aa44b8f.png)
+
+![Screen Shot 2021-07-02 at 11 44 13 AM](https://user-images.githubusercontent.com/54875593/124218024-fd056d00-db2b-11eb-8944-0a1966d1cfa8.png)
+![Screen Shot 2021-07-02 at 11 51 58 AM](https://user-images.githubusercontent.com/54875593/124218035-0098f400-db2c-11eb-9daf-205ad1e5d51c.png)
+
+## Access website
+
+![Screen Shot 2021-07-01 at 8 04 49 PM](https://user-images.githubusercontent.com/54875593/124218107-2625fd80-db2c-11eb-9faf-997bff4376dd.png)
+
+
+
+
+
+
+
