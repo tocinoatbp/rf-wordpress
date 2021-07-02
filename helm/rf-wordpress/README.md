@@ -87,8 +87,18 @@ kubectl port-forward phpmyadmin-xxxxx 8080:80
 ![Screen Shot 2021-07-01 at 8 04 49 PM](https://user-images.githubusercontent.com/54875593/124218107-2625fd80-db2c-11eb-9faf-997bff4376dd.png)
 
 
+## Clean up
 
+Delete Helm Charts
 
+```bash
+$ helm list
 
+NAME            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                   APP VERSION     
+phpmyadmin      rabbit-app      3               2021-07-02 10:39:15.13188 +0800 PST     deployed        phpmyadmin-0.1.0        latest          
+rf-wordpress    rabbit-app      1               2021-07-02 11:25:38.019873 +0800 PST    deployed        rf-wordpress-0.1.0      5.7.1-fpm-alpine
+
+$ helm delete phpmyadmin
+$ helm delete rf-wordpress
 
 
