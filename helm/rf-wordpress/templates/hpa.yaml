@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "rabbit-app.fullname" . }}
+  name: {{ include "rf-wordpress.fullname" . }}
   labels:
-    {{- include "rabbit-app.labels" . | nindent 4 }}
+    {{- include "rf-wordpress.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "rabbit-app.fullname" . }}
+    name: {{ include "rf-wordpress.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

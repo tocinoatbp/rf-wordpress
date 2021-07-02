@@ -11,8 +11,8 @@ image:
   tag: "10.5.8-focal"
 
 imagePullSecrets: []
-nameOverride: "mysql"
-fullnameOverride: "mysql"
+nameOverride: ""
+fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -79,7 +79,7 @@ autoscaling:
 nodeSelector: {}
 
 storageClass:
-  name: gp2
+  name: ""
 
 config:
   MYSQL_DATABASE: wp-database

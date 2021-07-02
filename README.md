@@ -29,8 +29,9 @@ eksctl create cluster -f eksctl/cluster.yaml
 
 ## Checklist
 
+- [x] cert-manager
+- [x] nginx sidecar/ingress controller
 - [x] mariadb
-- [x] nginx
 - [x] wordpress-app
 - [x] phpmyadmin
 

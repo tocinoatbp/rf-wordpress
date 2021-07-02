@@ -13,4 +13,3 @@ FROM wordpress:5.7.1-fpm-alpine
 
 COPY . /var/www/html
 COPY --from=vendor /app/ /var/www/html/
-

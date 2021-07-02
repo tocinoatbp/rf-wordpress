@@ -1,23 +1,31 @@
-# Default values for rabbit-app.
+# Default values for rf-wordpress.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
-nameOverride: "app"
-fullnameOverride: "app"
+nameOverride: "rf-wordpress"
+fullnameOverride: "rf-wordpress"
+
+mysql:
+  enabled: true
+  config:
+    MYSQL_DATABASE: wp-database
+    MYSQL_ROOT_PASSWORD: password1
+    MYSQL_USER: root
+    MYSQL_PASSWORD: password1
 
 wordpress:
   image:
-    repository: tocinoatbp/rabbit-devops
+    repository: tocinoatbp/rabbit-devops  
     pullPolicy: Always
     tag: "5.7.1-fpm-alpine"
 
   database:
-    WORDPRESS_DB_HOST: mysql
+    WORDPRESS_DB_HOST: rf-wordpress-mysql
     WORDPRESS_DB_NAME: wp-database
     WORDPRESS_DB_USER: root
-    WORDPRESS_DB_PASSWORD: password
+    WORDPRESS_DB_PASSWORD: password1
   
   config:  
     WORDPRESS_TABLE_PREFIX: shop_
@@ -28,11 +36,10 @@ wordpress:
     port: 9000
 
 nginx:
-  image:
-    repository: nginx
-    pullPolicy: IfNotPresent
-    tag: ""
-
+  enabled: true
+  ssl:
+    enabled: false
+    
   service:
     type: LoadBalancer
     port: 80
@@ -41,8 +48,6 @@ storage:
   storageClass:
     name: efs-sc
   size: 5Gi
-
-
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -53,18 +58,11 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
-
 podSecurityContext: {}
-  # fsGroup: 2000
 
-securityContext: 
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  runAsUser: 0
+securityContext: {}
+
+podAnnotations: {}
 
 ingress:
   enabled: true
@@ -72,19 +70,24 @@ ingress:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
-    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
-    # nginx.ingress.kubernetes.io/fastcgi-params-configmap: "example-cm"
+    nginx.ingress.kubernetes.io/fastcgi-index: index.php
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: nginx-fastcgi
+    nginx.ingress.kubernetes.io/fastcgi_buffers: "16 16k"
+    nginx.ingress.kubernetes.io/fastcgi_buffer_size: "32k"
+    cert-manager.io/acme-challenge-type: dns01
+    cert-manager.io/acme-dns01-provider: cf
+    cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-    # - host: chart-example.local
-    - paths:
+    - host: rabbit.tocinoatbp.xyz
+      paths:
       - path: /
         backend:
-          serviceName: app-wordpress
+          serviceName: rf-wordpress
           servicePort: 9000
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls: 
+   - secretName: rf-wordpress-tls
+     hosts:
+       - rabbit.tocinoatbp.xyz
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -104,5 +107,3 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-nodeSelector: {}

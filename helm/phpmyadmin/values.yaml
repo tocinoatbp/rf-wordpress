@@ -79,7 +79,7 @@ autoscaling:
 nodeSelector: {}
 
 config:
-  PMA_HOST: mysql # change to mysql release name
+  PMA_HOST: rf-wordpress-mysql # change to mysql release name
   PMA_ARBITRARY: "1"
   PMA_USER: root
-  PMA_PASSWORD: password
+  PMA_PASSWORD: password1

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rf-wordpress.fullname" . }}
+  labels:
+    {{- include "rf-wordpress.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.wordpress.service.type }}
+  ports:
+    - port: {{ .Values.wordpress.service.port }}
+      targetPort: {{ .Values.wordpress.service.port }}
+      protocol: TCP
+      name: wordpress
+    {{ if .Values.nginx.enabled }}
+    - protocol: TCP
+      name: nginx
+      port: {{ .Values.nginx.service.port }}
+      {{- if .Values.nginx.ssl.enabled }}
+      targetPort: 443
+      {{- else }}
+      targetPort: 80
+      {{- end }}
+    {{- end }}          
+  selector:
+    {{- include "rf-wordpress.selectorLabels" . | nindent 4 }}

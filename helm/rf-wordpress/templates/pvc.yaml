@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "rabbit-app.fullname" . }}-storage
+  name: {{ include "rf-wordpress.fullname" . }}-storage
 spec:
   accessModes:
     - ReadWriteMany

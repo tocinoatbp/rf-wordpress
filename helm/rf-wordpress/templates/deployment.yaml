@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rf-wordpress.fullname" . }}
+  labels:
+    {{- include "rf-wordpress.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "rf-wordpress.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "rf-wordpress.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "rf-wordpress.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: check-db
+          image: busybox
+          imagePullPolicy: IfNotPresent
+          command:
+          - sh
+          - -c
+          - |
+
+      {{- if .Values.mysql.enabled }}          
+            until nc -vzw 1 {{ .Release.Name }}-mysql 3306; do
+      {{- else }}
+            until nc -vzw 1 {{ .Values.wordpress.database.WORDPRESS_DB_HOST }} 3306; do
+      {{- end }}                  
+              echo "Waiting for mysql..."
+              sleep 2
+            done
+
+        # - name: composer
+        #   image: composer
+        #   # command: ["sh","-c","sleep 9999999"]
+        #   command:
+        #   - /bin/sh
+        #   - -c
+        #   - | 
+        #     composer install \
+        #       --ignore-platform-reqs \
+        #       --no-interaction \
+        #       --no-plugins \
+        #       --no-scripts \
+        #       --prefer-dist
+        #   volumeMounts:
+        #   - name: app-config
+        #     mountPath: /app/composer.json
+        #     subPath: composer.json
+        #   - name: app-config
+        #     mountPath: /app/composer.lock
+        #     subPath: composer.lock
+        #   - name: app-storage
+        #     mountPath: /app
+
+      containers:
+        # Wordpress           
+        - name: wordpress
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.wordpress.image.repository }}:{{ .Values.wordpress.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.wordpress.image.pullPolicy }}
+          # command: ["sh","-c","sleep 9999999"]
+          ports:
+            - name: wordpress
+              containerPort: {{ .Values.wordpress.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          - name: WORDPRESS_TABLE_PREFIX
+            value: {{ .Values.wordpress.config.WORDPRESS_TABLE_PREFIX | quote }}
+          - name: WORDPRESS_DEBUG
+            value: {{ .Values.wordpress.config.WORDPRESS_DEBUG | quote }}
+          {{- if .Values.mysql.enabled }}
+          - name: WORDPRESS_DB_HOST
+            value: {{ .Release.Name }}-mysql 
+          {{- else }}
+          - name: WORDRESS_DB_HOST
+            value: {{ .Values.wordpress.config.WORDRESS_DB_HOST }}
+          {{- end }}          
+          envFrom:
+          - secretRef:
+              name: {{ include "rf-wordpress.fullname" . }}-db-secrets
+          volumeMounts:
+          - name: app-config
+            mountPath: /var/www/html/composer.json
+            subPath: composer.json
+          - name: app-config
+            mountPath: /app/composer.lock
+            subPath: composer.lock            
+          - name: app-storage
+            mountPath: /var/www/html
+
+        {{- if .Values.nginx.enabled }}
+        - name: nginx-sidecar
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: nginx
+              containerPort: {{ .Values.nginx.service.port }}
+              protocol: TCP
+          volumeMounts:
+          - name: app-config
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: default.conf
+          - name: app-storage
+            mountPath: /var/www/html 
+          {{- if .Values.nginx.ssl.enabled }}  
+          - name: app-certs
+            mountPath: /etc/rf-wordpress/certs/
+          {{- end }}
+        {{- end }}                                    
+      volumes:
+        - name: app-config
+          configMap:
+            name: {{ include "rf-wordpress.fullname" . }}-config
+        - name: app-storage
+          persistentVolumeClaim:
+            claimName: {{ include "rf-wordpress.fullname" . }}-storage
+        {{- if .Values.nginx.ssl.enabled }}    
+        - name: app-certs
+          secret:
+            secretName: {{ include "rf-wordpress.fullname" . }}-certs
+        {{- end }}    
+

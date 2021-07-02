@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "rf-wordpress.fullname" . }}-config
+  labels:
+    {{- include "rf-wordpress.labels" . | nindent 4 }}-config  
+data:
+{{ (.Files.Glob "configs/*").AsConfig | indent 2 }}
+  default.conf: |
+    server {
+        {{- if .Values.nginx.ssl.enabled }}
+          listen 443 ssl;
+          ssl_certificate /etc/rf-wordpress/certs/tls.cert;
+          ssl_certificate_key /etc/rf-wordpress/certs/tls.key;
+        {{- else }}
+          listen 80 default_server;
+        {{- end }}
+        root /var/www/html;
+        server_name  _;
+        index index.php;
+        location / {
+            try_files $uri $uri/ /index.php?$args;
+        }
+        location ~ \.php$ {
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass {{ include "rf-wordpress.fullname" . }}:9000;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param   PATH_INFO       $fastcgi_path_info;
+            fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+    }

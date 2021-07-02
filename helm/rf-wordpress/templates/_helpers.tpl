@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "rabbit-app.name" -}}
+{{- define "rf-wordpress.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "rabbit-app.fullname" -}}
+{{- define "rf-wordpress.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "rabbit-app.chart" -}}
+{{- define "rf-wordpress.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "rabbit-app.labels" -}}
-helm.sh/chart: {{ include "rabbit-app.chart" . }}
-{{ include "rabbit-app.selectorLabels" . }}
+{{- define "rf-wordpress.labels" -}}
+helm.sh/chart: {{ include "rf-wordpress.chart" . }}
+{{ include "rf-wordpress.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "rabbit-app.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "rabbit-app.name" . }}
+{{- define "rf-wordpress.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "rf-wordpress.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "rabbit-app.serviceAccountName" -}}
+{{- define "rf-wordpress.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "rabbit-app.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "rf-wordpress.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
