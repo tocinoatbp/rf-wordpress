@@ -30,3 +30,8 @@ data:
             fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
         }
     }
+  WORDPRESS_CONFIG_EXTRA: |-
+          /* Multisite */
+          define('WP_ALLOW_MULTISITE', true );
+          define('DOMAIN_CURRENT_SITE', 'rabbit.tocinoatbp.xyz');
+               

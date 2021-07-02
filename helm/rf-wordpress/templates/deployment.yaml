@@ -83,6 +83,11 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+          - name: WORDPRESS_CONFIG_EXTRA
+            valueFrom:
+              configMapKeyRef:
+                name: {{ include "rf-wordpress.fullname" . }}-config
+                key: WORDPRESS_CONFIG_EXTRA
           - name: WORDPRESS_TABLE_PREFIX
             value: {{ .Values.wordpress.config.WORDPRESS_TABLE_PREFIX | quote }}
           - name: WORDPRESS_DEBUG

@@ -26,6 +26,9 @@ wordpress:
     WORDPRESS_DB_NAME: wp-database
     WORDPRESS_DB_USER: root
     WORDPRESS_DB_PASSWORD: password1
+    WORDPRESS_CONFIG_EXTRA: |-
+      /* Multisite */
+      define('WP_ALLOW_MULTISITE', true );
   
   config:  
     WORDPRESS_TABLE_PREFIX: shop_
